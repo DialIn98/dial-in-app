@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    <link rel="stylesheet" href="./style.css">
+
+  </head>
+    
+  <body>
+  <div id="app">
+  <div id="flash"></div>
+  <div id="toast"></div>
+
+  <div id="splash">
+    <svg class="crosshair-preview" viewBox="0 0 80 80" fill="none">
+      <circle cx="40" cy="40" r="38" stroke="#ff3c00" stroke-width="1" stroke-dasharray="4 4"/>
+      <circle cx="40" cy="40" r="20" stroke="#ff3c00" stroke-width="1"/>
+      <circle cx="40" cy="40" r="4" stroke="#ff3c00" stroke-width="1.5"/>
+      <line x1="40" y1="0" x2="40" y2="80" stroke="#ff3c00" stroke-width="0.75"/>
+      <line x1="0" y1="40" x2="80" y2="40" stroke="#ff3c00" stroke-width="0.75"/>
+      <line x1="40" y1="24" x2="40" y2="56" stroke="#ff3c00" stroke-width="1.5"/>
+      <line x1="24" y1="40" x2="56" y2="40" stroke="#ff3c00" stroke-width="1.5"/>
+    </svg>
+    <h1>DIAL IN</h1>
+    <div class="tagline">Digiscoping Reticle Overlay</div>
+    <p>Attach your phone to your spotting scope. Overlay a calibrated MOA or MRAD reticle on your live feed to dope your shots.</p>
+    <button id="start-btn" onclick="startCamera()">ACTIVATE CAMERA</button>
+  </div>
+
+  <video id="video" autoplay playsinline muted></video>
+  <div id="no-camera"></div>
+  <canvas id="reticle-canvas"></canvas>
+  <canvas id="composite-canvas"></canvas>
+
+  <div class="bracket bracket-tl"></div>
+  <div class="bracket bracket-tr"></div>
+  <div class="bracket bracket-bl"></div>
+  <div class="bracket bracket-br"></div>
+
+  <div id="top-hud">
+    <div class="hud-logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="11" stroke="#ff3c00" stroke-width="1.5"/>
+        <circle cx="12" cy="12" r="5" stroke="#ff3c00" stroke-width="1.5"/>
+        <circle cx="12" cy="12" r="1.5" fill="#ff3c00"/>
+        <line x1="12" y1="0" x2="12" y2="24" stroke="#ff3c00" stroke-width="1"/>
+        <line x1="0" y1="12" x2="24" y2="12" stroke="#ff3c00" stroke-width="1"/>
+      </svg>
+      <div>
+        <div class="logo-text">DIAL IN</div>
+        <div class="logo-sub">DIGISCOPING RETICLE</div>
+      </div>
+    </div>
+    <div class="hud-stats">
+      <div class="stat"><div class="stat-label">MAG</div><div class="stat-value" id="stat-zoom">20×</div></div>
+      <div class="stat"><div class="stat-label">UNIT</div><div class="stat-value" id="stat-unit">MOA</div></div>
+      <div id="cal-btn" onclick="openCal()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <span id="cal-btn-label">CALIBRATE</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="mode-bar">
+    <button class="mode-btn active" id="btn-moa" onclick="setUnit('MOA')">MOA</button>
+    <button class="mode-btn" id="btn-mrad" onclick="setUnit('MRAD')">MRAD</button>
+  </div>
+
+  <div id="settings-panel">
+    <div class="control-group" style="flex:2">
+      <div class="control-label">MAGNIFICATION — <span id="zoom-label">20×</span></div>
+      <input type="range" id="zoom-slider" min="5" max="80" value="20" step="1" oninput="updateZoom(this.value)">
+    </div>
+    <div class="control-group" style="align-items:flex-end">
+      <div class="control-label">COLOR</div>
+      <div class="swatches">
+        <div class="swatch active" style="background:#ff3c00" onclick="setColor('#ff3c00',this)"></div>
+        <div class="swatch" style="background:#00ff88" onclick="setColor('#00ff88',this)"></div>
+        <div class="swatch" style="background:#ffff00" onclick="setColor('#ffff00',this)"></div>
+        <div class="swatch" style="background:#00cfff" onclick="setColor('#00cfff',this)"></div>
+        <div class="swatch" style="background:#ffffff" onclick="setColor('#ffffff',this)"></div>
+      </div>
+    </div>
+    <div class="control-group" style="align-items:flex-end">
+      <div class="control-label">CENTER</div>
+      <div class="center-opts">
+        <div class="center-opt active" id="copt-crosshair" onclick="setCenter('crosshair',this)">
+          <svg width="20" height="20" viewBox="0 0 22 22" fill="none"><line x1="11" y1="2" x2="11" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="2" y1="11" x2="20" y2="11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="11" cy="11" r="3.5" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+        </div>
+        <div class="center-opt" id="copt-dot" onclick="setCenter('dot',this)">
+          <svg width="20" height="20" viewBox="0 0 22 22" fill="none"><line x1="11" y1="2" x2="11" y2="20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="2" y1="11" x2="20" y2="11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="11" cy="11" r="2.8" fill="currentColor"/></svg>
+        </div>
+        <div class="center-opt" id="copt-swarovski" onclick="setCenter('swarovski',this)">
+          <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
+            <line x1="11" y1="2" x2="11" y2="8.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="8.5" y1="4" x2="13.5" y2="4" stroke="currentColor" stroke-width="1.2"/>
+            <line x1="9.2" y1="6" x2="12.8" y2="6" stroke="currentColor" stroke-width="1"/>
+            <line x1="11" y1="13.5" x2="11" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="8.5" y1="18" x2="13.5" y2="18" stroke="currentColor" stroke-width="1.2"/>
+            <line x1="9.2" y1="16" x2="12.8" y2="16" stroke="currentColor" stroke-width="1"/>
+            <line x1="2" y1="11" x2="8.5" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <line x1="13.5" y1="11" x2="20" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="1.2 2.2"/>
+            <line x1="9.5" y1="11" x2="12.5" y2="11" stroke="currentColor" stroke-width="1.2"/>
+            <line x1="11" y1="9.5" x2="11" y2="12.5" stroke="currentColor" stroke-width="1.2"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="rec-timer"><div class="rec-dot"></div><span id="rec-time">00:00</span></div>
+
+  <div id="camera-bar">
+    <div id="cam-mode-row">
+      <span class="cam-mode-label active" id="lbl-photo" onclick="setCamMode('photo')">PHOTO</span>
+      <span class="cam-mode-label" id="lbl-video" onclick="setCamMode('video')">VIDEO</span>
+    </div>
+    <div id="shutter-row">
+      <div id="thumb-wrap">
+        <svg id="thumb-placeholder" viewBox="0 0 28 28" fill="none">
+          <rect x="2" y="6" width="24" height="18" rx="3" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+          <circle cx="14" cy="15" r="5" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+          <path d="M9 6l2-3h6l2 3" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" fill="none"/>
+        </svg>
+        <img id="thumb-img" alt="last capture"/>
+      </div>
+      <div id="shutter-btn" onclick="handleShutter()"><div id="shutter-inner"></div></div>
+      <div id="reticle-toggle" onclick="toggleReticle()">
+        <svg id="reticle-toggle-icon" width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <circle cx="13" cy="13" r="11" stroke="#fff" stroke-width="1.6"/>
+          <circle cx="13" cy="13" r="5" stroke="#fff" stroke-width="1.6"/>
+          <circle cx="13" cy="13" r="1.8" fill="#fff"/>
+          <line x1="13" y1="1" x2="13" y2="25" stroke="#fff" stroke-width="1.2"/>
+          <line x1="1" y1="13" x2="25" y2="13" stroke="#fff" stroke-width="1.2"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div id="cal-overlay">
+    <canvas id="cal-canvas"></canvas>
+    <div id="cal-header">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="cal-title">⊕ Calibrate Reticle</div>
+      </div>
+      <div class="cal-sub">Point at a target of known size. Enter the target size and distance, then use the slider to spread the bracket lines until they match the edges of your target through the scope.</div>
+      <div class="cal-inputs">
+        <div class="cal-input-group">
+          <div class="cal-input-label">Target Size (inches)</div>
+          <input class="cal-input" type="number" id="cal-size" value="1" min="0.1" max="100" step="0.1" inputmode="decimal" onchange="updateCalReadout()">
+        </div>
+        <div class="cal-input-group">
+          <div class="cal-input-label">Distance (yards)</div>
+          <input class="cal-input" type="number" id="cal-dist" value="100" min="1" max="2000" step="1" inputmode="numeric" onchange="updateCalReadout()">
+        </div>
+      </div>
+    </div>
+    <div id="cal-footer">
+      <div class="cal-spread-row">
+        <div class="cal-spread-label">BRACKET SPREAD</div>
+        <input type="range" id="cal-spread-slider" min="20" max="800" value="200" step="1" oninput="updateCalBrackets(this.value)">
+        <div id="cal-spread-val">200px</div>
+      </div>
+      <div id="cal-readout">Target = <span id="cal-moa-val">—</span> · <span id="cal-mrad-val">—</span> · Spread = <span id="cal-px-val">200</span>px</div>
+      <div class="cal-btn-row">
+        <button class="cal-action-btn" id="cal-cancel-btn" onclick="closeCal()">CANCEL</button>
+        <button class="cal-action-btn" id="cal-confirm-btn" onclick="confirmCal()">SAVE CALIBRATION ✓</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+    <script  src="./script.js"></script>
+
+  </body>
+  
+</html>
