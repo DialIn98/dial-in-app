@@ -9,8 +9,7 @@ body{background:#000;color:var(--text);font-family:'Rajdhani',sans-serif;height:
 #composite-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:none;}
 
 /* TOP HUD - taller for easier tapping */
-#top-hud{position:absolute;top:0;left:0;right:0;z-index:10;height:68px;display:flex;align-items:stretch;justify-content:space-between;background:var(--hud-bg);border-bottom:1px solid var(--hud-border);backdrop-filter:blur(12px);padding:0 16px;}
-.hud-logo{display:flex;align-items:center;gap:10px;}
+#top-hud{position:absolute;top:0;left:0;right:0;z-index:10;height:72px;display:flex;align-items:stretch;justify-content:space-between;background:var(--hud-bg);border-bottom:1px solid var(--hud-border);backdrop-filter:blur(12px);padding:0 12px;}.hud-logo{display:flex;align-items:center;gap:10px;}
 .logo-text{font-size:22px;font-weight:700;letter-spacing:3px;color:var(--accent);line-height:1;}
 .logo-sub{font-size:9px;letter-spacing:2px;color:rgba(200,180,160,0.45);font-family:'Share Tech Mono',monospace;}
 .hud-stats{display:flex;align-items:center;gap:14px;}
@@ -19,8 +18,7 @@ body{background:#000;color:var(--text);font-family:'Rajdhani',sans-serif;height:
 .stat-value{font-size:18px;font-weight:600;color:var(--accent2);font-family:'Share Tech Mono',monospace;line-height:1;}
 
 /* CALIBRATE BUTTON - much bigger tap target */
-#cal-btn{display:flex;align-items:center;gap:6px;padding:0 14px;min-height:44px;background:rgba(255,60,0,0.12);border:1px solid var(--hud-border);border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(200,180,160,0.6);transition:all .15s;white-space:nowrap;}
-#cal-btn.calibrated{color:#00ff88;border-color:rgba(0,255,136,0.4);background:rgba(0,255,136,0.08);}
+#cal-btn{display:flex;align-items:center;gap:6px;padding:0 12px;min-height:52px;min-width:90px;background:rgba(255,60,0,0.12);border:1px solid var(--hud-border);border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(200,180,160,0.6);transition:all .15s;white-space:nowrap;}#cal-btn.calibrated{color:#00ff88;border-color:rgba(0,255,136,0.4);background:rgba(0,255,136,0.08);}
 
 /* MODE BAR - bigger buttons */
 #mode-bar{position:absolute;top:76px;left:50%;transform:translateX(-50%);z-index:10;display:flex;background:var(--hud-bg);border:1px solid var(--hud-border);border-radius:8px;overflow:hidden;backdrop-filter:blur(12px);}
@@ -89,8 +87,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:32px;heigh
 .bracket-br{bottom:230px;right:8px;border-bottom:1px solid var(--accent);border-right:1px solid var(--accent);}
 
 #no-camera{display:none;position:absolute;inset:0;z-index:2;background:#050810;}
-#cal-overlay{position:absolute;inset:0;z-index:50;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);display:none;flex-direction:column;align-items:center;}
-#cal-overlay.visible{display:flex;}
+#cal-overlay{position:absolute;inset:0;z-index:50;background:rgba(0,0,0,0.15);display:none;flex-direction:column;align-items:center;}#cal-overlay.visible{display:flex;}
 #cal-header{width:100%;background:var(--hud-bg);border-bottom:1px solid var(--hud-border);padding:16px 20px 14px;display:flex;flex-direction:column;gap:12px;}
 .cal-title{font-size:20px;font-weight:700;letter-spacing:3px;color:var(--accent);text-transform:uppercase;}
 .cal-sub{font-size:13px;color:rgba(200,180,160,0.6);font-family:'Share Tech Mono',monospace;letter-spacing:1px;line-height:1.5;}
