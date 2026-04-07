@@ -182,21 +182,27 @@ function takePhoto(){
     const img=document.getElementById('thumb-img');img.src=url;img.style.display='block';
     document.getElementById('thumb-placeholder').style.display='none';
     try{
-      const reader=new FileReader();
-      reader.onloadend=async()=>{
-        const base64=reader.result.split(',')[1];
-        const ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
-        const fileName=`DialIn_${ts}.jpg`;
-        if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.Filesystem){
-          const {Filesystem}=window.Capacitor.Plugins;
-          await Filesystem.writeFile({path:fileName,data:base64,directory:'DOCUMENTS',recursive:true});
-        }
-        showToast('📸  PHOTO SAVED');
-      };
-      reader.readAsDataURL(blob);
+      const base64=await new Promise((resolve)=>{
+        const reader=new FileReader();
+        reader.onloadend=()=>resolve(reader.result.split(',')[1]);
+        reader.readAsDataURL(blob);
+      });
+      const ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+      const fileName=`DialIn_${ts}.jpg`;
+      const {Filesystem,Share}=window.Capacitor.Plugins;
+      const result=await Filesystem.writeFile({
+        path:fileName,
+        data:base64,
+        directory:'CACHE'
+      });
+      await Share.share({
+        title:'Dial In Photo',
+        files:[result.uri],
+        dialogTitle:'Save Photo'
+      });
+      showToast('📸  PHOTO SAVED');
     }catch(e){
-      const a=document.createElement('a');const ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
-      a.href=url;a.download=`DialIn_${ts}.jpg`;a.click();showToast('📸  PHOTO SAVED');
+      showToast('📸  PHOTO CAPTURED');
     }
   },'image/jpeg',0.95);
 }
@@ -217,23 +223,30 @@ function startRecording(){
     const img=document.getElementById('thumb-img');img.src=url;img.style.display='block';
     document.getElementById('thumb-placeholder').style.display='none';
     try{
-      const reader=new FileReader();
-      reader.onloadend=async()=>{
-        const base64=reader.result.split(',')[1];
-        const ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
-        const ext=blob.type.includes('mp4')?'mp4':'webm';
-        const fileName=`DialIn_${ts}.${ext}`;
-        if(window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.Filesystem){
-          const {Filesystem}=window.Capacitor.Plugins;
-          await Filesystem.writeFile({path:fileName,data:base64,directory:'DOCUMENTS',recursive:true});
-        }
-        URL.revokeObjectURL(url);showToast('🎬  VIDEO SAVED');
-      };
-      reader.readAsDataURL(blob);
-    }catch(e){
-      const a=document.createElement('a');const ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+      const base64=await new Promise((resolve)=>{
+        const reader=new FileReader();
+        reader.onloadend=()=>resolve(reader.result.split(',')[1]);
+        reader.readAsDataURL(blob);
+      });
+      const ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
       const ext=blob.type.includes('mp4')?'mp4':'webm';
-      a.href=url;a.download=`DialIn_${ts}.${ext}`;a.click();URL.revokeObjectURL(url);showToast('🎬  VIDEO SAVED');
+      const fileName=`DialIn_${ts}.${ext}`;
+      const {Filesystem,Share}=window.Capacitor.Plugins;
+      const result=await Filesystem.writeFile({
+        path:fileName,
+        data:base64,
+        directory:'CACHE'
+      });
+      await Share.share({
+        title:'Dial In Video',
+        files:[result.uri],
+        dialogTitle:'Save Video'
+      });
+      URL.revokeObjectURL(url);
+      showToast('🎬  VIDEO SAVED');
+    }catch(e){
+      URL.revokeObjectURL(url);
+      showToast('🎬  VIDEO CAPTURED');
     }
   };
   mediaRecorder.start(100);isRecording=true;
@@ -241,6 +254,7 @@ function startRecording(){
   document.getElementById('rec-timer').classList.add('visible');
   recSeconds=0;updateRecTimer();recTimerInterval=setInterval(updateRecTimer,1000);
 }
+
 function stopRecording(){if(mediaRecorder&&mediaRecorder.state!=='inactive')mediaRecorder.stop();isRecording=false;document.getElementById('shutter-btn').classList.remove('recording');document.getElementById('rec-timer').classList.remove('visible');clearInterval(recTimerInterval);}
 function updateRecTimer(){recSeconds++;const m=String(Math.floor(recSeconds/60)).padStart(2,'0'),s=String(recSeconds%60).padStart(2,'0');document.getElementById('rec-time').textContent=`${m}:${s}`}
 function updateZoom(val){mag=parseInt(val);document.getElementById('zoom-label').textContent=mag+'×';document.getElementById('stat-zoom').textContent=mag+'×';drawReticle()}
