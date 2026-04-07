@@ -10,12 +10,15 @@
     
   <body>
   <script>
-if(!window.Capacitor){
-  document.addEventListener('DOMContentLoaded',function(){
-    document.body.innerHTML='<div style="background:#060a0e;color:#ff3c00;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:Arial,sans-serif;padding:40px"><svg width="60" height="60" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" stroke="#ff3c00" stroke-width="2"/><line x1="40" y1="10" x2="40" y2="70" stroke="#ff3c00" stroke-width="2"/><line x1="10" y1="40" x2="70" y2="40" stroke="#ff3c00" stroke-width="2"/></svg><h1 style="font-size:32px;letter-spacing:4px;margin:20px 0 10px">DIAL IN</h1><p style="color:#ffb347;font-size:13px;letter-spacing:2px;margin-bottom:30px">DIGISCOPING RETICLE</p><p style="color:rgba(200,180,160,0.6);font-size:14px;line-height:1.7;max-width:280px">This app is only available on the iOS App Store.</p><a href="https://apps.apple.com/app/id6761078492" style="margin-top:24px;padding:14px 40px;background:#ff3c00;color:#fff;text-decoration:none;border-radius:6px;font-size:16px;font-weight:700;letter-spacing:2px">Download on App Store</a></div>';
-  });
-}
-</script> 
+(function(){
+  var isNative=window.location.protocol==='capacitor:'||
+    (typeof window.Capacitor!=='undefined'&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform());
+  if(!isNative){
+    document.write('<div style="background:#060a0e;color:#ff3c00;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:Arial,sans-serif;padding:40px"><svg width="60" height="60" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="38" stroke="#ff3c00" stroke-width="2"/><line x1="40" y1="10" x2="40" y2="70" stroke="#ff3c00" stroke-width="2"/><line x1="10" y1="40" x2="70" y2="40" stroke="#ff3c00" stroke-width="2"/></svg><h1 style="font-size:32px;letter-spacing:4px;margin:20px 0 10px">DIAL IN</h1><p style="color:#ffb347;font-size:13px;letter-spacing:2px;margin-bottom:30px">DIGISCOPING RETICLE</p><p style="color:rgba(200,180,160,0.6);font-size:14px;line-height:1.7;max-width:280px">This app is only available on the iOS App Store.</p><a href="https://apps.apple.com/app/id6761078492" style="margin-top:24px;padding:14px 40px;background:#ff3c00;color:#fff;text-decoration:none;border-radius:6px;font-size:16px;font-weight:700;letter-spacing:2px">Download on App Store</a></div>');
+    document.close();
+  }
+})();
+</script>
 <div id="app">
   <div id="flash"></div>
   <div id="toast"></div>
