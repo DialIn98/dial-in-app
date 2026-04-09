@@ -189,19 +189,17 @@ function takePhoto(){
       });
       const ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
       const fileName=`DialIn_${ts}.jpg`;
-      const {Filesystem,Share}=window.Capacitor.Plugins;
-      const result=await Filesystem.writeFile({
+      const {Filesystem}=window.Capacitor.Plugins;
+      const {Media}=window.Capacitor.Plugins;
+      const writeResult=await Filesystem.writeFile({
         path:fileName,
         data:base64,
         directory:'CACHE'
       });
-      await Share.share({
-        title:'Dial In Photo',
-        files:[result.uri],
-        dialogTitle:'Save Photo'
-      });
-      showToast('📸  PHOTO SAVED');
+      await Media.savePhoto({path:writeResult.uri});
+      showToast('📸  PHOTO SAVED TO PHOTOS');
     }catch(e){
+      console.error('Photo save error:',e);
       showToast('📸  PHOTO CAPTURED');
     }
   },'image/jpeg',0.95);
@@ -231,20 +229,18 @@ function startRecording(){
       const ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
       const ext=blob.type.includes('mp4')?'mp4':'webm';
       const fileName=`DialIn_${ts}.${ext}`;
-      const {Filesystem,Share}=window.Capacitor.Plugins;
-      const result=await Filesystem.writeFile({
+      const {Filesystem}=window.Capacitor.Plugins;
+      const {Media}=window.Capacitor.Plugins;
+      const writeResult=await Filesystem.writeFile({
         path:fileName,
         data:base64,
         directory:'CACHE'
       });
-      await Share.share({
-        title:'Dial In Video',
-        files:[result.uri],
-        dialogTitle:'Save Video'
-      });
+      await Media.saveVideo({path:writeResult.uri});
       URL.revokeObjectURL(url);
-      showToast('🎬  VIDEO SAVED');
+      showToast('🎬  VIDEO SAVED TO PHOTOS');
     }catch(e){
+      console.error('Video save error:',e);
       URL.revokeObjectURL(url);
       showToast('🎬  VIDEO CAPTURED');
     }
