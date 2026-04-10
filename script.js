@@ -189,15 +189,15 @@ function takePhoto(){
       });
       const ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
       const fileName=`DialIn_${ts}.jpg`;
-      const {Filesystem}=window.Capacitor.Plugins;
-      const {Media}=window.Capacitor.Plugins;
+      const {Filesystem,Media}=window.Capacitor.Plugins;
       const writeResult=await Filesystem.writeFile({
         path:fileName,
         data:base64,
         directory:'CACHE'
       });
       await Media.savePhoto({path:writeResult.uri});
-      showToast('📸  PHOTO SAVED TO PHOTOS');
+      await Filesystem.deleteFile({path:fileName,directory:'CACHE'});
+      showToast('📸  SAVED TO PHOTOS');
     }catch(e){
       console.error('Photo save error:',e);
       showToast('📸  PHOTO CAPTURED');
@@ -229,16 +229,16 @@ function startRecording(){
       const ts=new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
       const ext=blob.type.includes('mp4')?'mp4':'webm';
       const fileName=`DialIn_${ts}.${ext}`;
-      const {Filesystem}=window.Capacitor.Plugins;
-      const {Media}=window.Capacitor.Plugins;
+      const {Filesystem,Media}=window.Capacitor.Plugins;
       const writeResult=await Filesystem.writeFile({
         path:fileName,
         data:base64,
         directory:'CACHE'
       });
       await Media.saveVideo({path:writeResult.uri});
+      await Filesystem.deleteFile({path:fileName,directory:'CACHE'});
       URL.revokeObjectURL(url);
-      showToast('🎬  VIDEO SAVED TO PHOTOS');
+      showToast('🎬  SAVED TO PHOTOS');
     }catch(e){
       console.error('Video save error:',e);
       URL.revokeObjectURL(url);
